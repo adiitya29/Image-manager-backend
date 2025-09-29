@@ -260,5 +260,43 @@ imageRoute.delete("/image/:id", authMiddleware,async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /api/myImages:
+ *   get:
+ *     summary: Get current user's images only (Protected Route)
+ *     tags: [images]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user's images retrieved successfully
+ *       401:
+ *         description: Unauthorized - Token required
+ *       404:
+ *         description: No images found
+ *       500:
+ *         description: Server Error
+ */
+
+imageRoute.get("/myImages", authMiddleware, async (req, res) => {
+    try {
+        // Get only images uploaded by the current authenticated user
+        const userImages = await Image.find({ uploadedBy: req.user._id })
+            .populate('uploadedBy', 'username email')
+            .sort({ createdAt: -1 }); // Show newest first
+
+        res.status(200).json({
+            message: "Your images retrieved successfully",
+            requestedBy: req.user.username,
+            totalImages: userImages.length,
+            images: userImages
+        });
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 export default imageRoute

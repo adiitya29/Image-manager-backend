@@ -5,6 +5,7 @@ import morgan from "morgan";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from 'cloudinary';
 import bodyParser from "body-parser";
+import authRoute from "./src/Routes/AuthRoutes.js";
 
 import imageRoute from "./src/Routes/ImageRoutes.js";
 
@@ -65,7 +66,12 @@ app.get("/", (req, res) => {
     res.send(`<a href = "http://localhost:4000/api-docs">Swagger Documentation</a>`)
 });
 
+//existing image route
 app.use("/api", imageRoute);
+
+//new routes added from here
+app.use("/api/auth", authRoute);
+
 
 app.listen(process.env.PORT, () => {
     console.log(`Serving on port ${process.env.PORT}`);
